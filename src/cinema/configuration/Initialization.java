@@ -3,14 +3,20 @@ package cinema.configuration;
 import cinema.model.Room;
 import cinema.model.Seat;
 
-import java.util.ArrayList;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+/**
+ * Class for initialization of base object with default configuration
+ * @author Patryk Lewczuk
+ */
 public class Initialization {
 
     public static Room initializeRoom(){
-        Room room = new Room(9,9,new ArrayList<>());
+        Room room = new Room(9,9,new ConcurrentLinkedQueue<>());
 
-        ArrayList<Seat> available_seats = room.getAvailable_seats();
+        Queue<Seat> available_seats = room.getAvailable_seats();
 
         for (int i = 1; i <= room.getTotal_rows(); i++){
 

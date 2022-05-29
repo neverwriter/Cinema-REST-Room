@@ -1,17 +1,27 @@
 package cinema.model;
 
-import java.util.ArrayList;
+import java.util.Queue;
 
+/**
+ * Class describing a cinema Room
+ * @author Patryk Lewczuk
+ */
 public class Room {
 
     private int total_rows;
     private int total_columns;
-    private ArrayList<Seat> available_seats;
+    private Queue<Seat> available_seats;
 
+    /**
+     * Default constructor
+     */
     public Room() {
     }
 
-    public Room(int total_rows, int total_columns, ArrayList<Seat> available_seats) {
+    /**
+     * Full constructor
+     */
+    public Room(int total_rows, int total_columns, Queue<Seat> available_seats) {
         this.total_rows = total_rows;
         this.total_columns = total_columns;
         this.available_seats = available_seats;
@@ -35,11 +45,11 @@ public class Room {
         this.total_columns = total_columns;
     }
 
-    public ArrayList<Seat> getAvailable_seats() {
+    public Queue<Seat> getAvailable_seats() {
         return available_seats;
     }
 
-    public void setAvailable_seats(ArrayList<Seat> available_seats) {
+    public void setAvailable_seats(Queue<Seat> available_seats) {
         this.available_seats = available_seats;
     }
 }

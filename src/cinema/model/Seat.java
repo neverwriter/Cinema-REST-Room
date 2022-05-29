@@ -2,8 +2,10 @@ package cinema.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.beans.Transient;
-
+/**
+ * Class describing a seat in cinema room
+ * @author Patryk Lewczuk
+ */
 public class Seat {
 
     private int row;
@@ -15,9 +17,19 @@ public class Seat {
     @JsonIgnore
     private boolean sold;
 
+    /**
+     * Default constructor
+     */
+    public Seat() {
+    }
+
+    /**
+     * Full constructor
+     */
     public Seat(int row, int column, int price, boolean sold) {
         this.row = row;
         this.column = column;
+        this.price = price;
         this.sold = sold;
     }
 
