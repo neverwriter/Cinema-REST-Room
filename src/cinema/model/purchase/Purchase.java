@@ -1,6 +1,6 @@
 package cinema.model.purchase;
 
-import cinema.model.Seat;
+import cinema.model.room.Seat;
 
 import java.util.UUID;
 

@@ -1,7 +1,7 @@
 package cinema.configuration;
 
-import cinema.model.Room;
-import cinema.model.Seat;
+import cinema.model.room.Room;
+import cinema.model.room.Seat;
 
 
 import java.util.Queue;

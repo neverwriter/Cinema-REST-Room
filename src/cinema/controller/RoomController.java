@@ -1,8 +1,10 @@
 package cinema.controller;
 
 import cinema.configuration.Initialization;
-import cinema.model.Room;
-import cinema.model.Seat;
+import cinema.model.purchase.Token;
+import cinema.model.room.ReturnedTicket;
+import cinema.model.room.Room;
+import cinema.model.room.Seat;
 import cinema.model.error.Error;
 import cinema.model.error.ErrorBean;
 import cinema.model.purchase.Purchase;
@@ -38,25 +40,78 @@ public class RoomController {
             if (seat.getRow() == seatFromIterator.getRow()
                     && seat.getColumn() == seatFromIterator.getColumn()) {
                 if (seatFromIterator.isSold()) {
-                    ErrorBean errorBean = new ErrorBean(Error.TICKET_ALREADY_PURCHASED.toString());
-                    return new ResponseEntity<>(errorBean, HttpStatus.BAD_REQUEST);
+
+                    return new ResponseEntity<>(
+                            new ErrorBean(Error.TICKET_ALREADY_PURCHASED.toString()),
+                            HttpStatus.BAD_REQUEST);
                 }
                 seatFromIterator.setSold(true);
                 Purchase currentPurchase = new Purchase(seatFromIterator);
                 purchases.add(currentPurchase);
 
                 return new ResponseEntity<>(currentPurchase, HttpStatus.OK);
-
             }
         }
-        ErrorBean errorBean = new ErrorBean(Error.OUT_OF_BOUND.toString());
-        return new ResponseEntity<>(errorBean, HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(
+                new ErrorBean(Error.OUT_OF_BOUND.toString()),
+                HttpStatus.BAD_REQUEST);
 
     }
 
     @PostMapping("/return")
-    public ResponseEntity<?> returnTicket(@RequestBody String token) {
-        return new ResponseEntity<>(token, HttpStatus.OK);
+    public ResponseEntity<?> returnTicket(@RequestBody Token token) {
+
+
+        for (Purchase purchase : purchases) {
+            if (purchase.getToken().equals(token.getToken())) {
+
+                if (returnTicket(purchase.getTicket())) {
+                    ReturnedTicket returnedTicket = new ReturnedTicket(purchase.getTicket());
+                    purchases.remove(purchase);
+                    return new ResponseEntity<>(returnedTicket, HttpStatus.OK);
+                }
+
+                return new ResponseEntity<>(
+                        new ErrorBean(Error.TICKET_NOT_RETURN.toString()),
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+
+            }
+        }
+
+        return new ResponseEntity<>(
+                new ErrorBean(Error.WRONG_TOKEN.toString()),
+                HttpStatus.BAD_REQUEST);
+
     }
+
+    /**
+     * Method responsible for changing status on seat for which ticket is returned
+     *
+     * @param seat - Seat for which ticket is returned.
+     * @return - boolean information if status change was successful
+     */
+    private boolean returnTicket(Seat seat) {
+        for (Seat seatFromIterator : cinemaRoom.getAvailable_seats()) {
+            if (seat.getRow() == seatFromIterator.getRow()
+                    && seat.getColumn() == seatFromIterator.getColumn()) {
+                if (seatFromIterator.isSold()) {
+                    seatFromIterator.setSold(false);
+
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private String getTokenFromString(String postedToken) {
+
+        if (postedToken.length() > 53) {
+            return postedToken.substring(17, 53);
+        }
+        return null;
+    }
+
 
 }

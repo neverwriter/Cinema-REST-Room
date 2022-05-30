@@ -1,4 +1,4 @@
-package cinema.model;
+package cinema.model.room;
 
 import java.util.Queue;
 
