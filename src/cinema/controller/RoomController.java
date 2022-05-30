@@ -1,5 +1,6 @@
 package cinema.controller;
 
+import cinema.configuration.AppConfiguration;
 import cinema.configuration.Initialization;
 import cinema.model.purchase.Token;
 import cinema.model.room.ReturnedTicket;
@@ -8,12 +9,10 @@ import cinema.model.room.Seat;
 import cinema.model.error.Error;
 import cinema.model.error.ErrorBean;
 import cinema.model.purchase.Purchase;
+import cinema.service.stats.StatisticsUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -85,6 +84,22 @@ public class RoomController {
 
     }
 
+    @PostMapping("/stats")
+    public ResponseEntity<?> getStatistics(@RequestParam(required = false) String password) {
+
+        if (password == null) {
+            return new ResponseEntity<>(new ErrorBean(Error.WRONG_PASSWORD.toString()), HttpStatus.UNAUTHORIZED);
+        }
+
+        if (AppConfiguration.isPasswordCorrect(password)) {
+            StatisticsUtil statisticsUtil = new StatisticsUtil();
+
+            return new ResponseEntity<>(statisticsUtil.calculateStatistics(cinemaRoom), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(new ErrorBean(Error.WRONG_PASSWORD.toString()), HttpStatus.UNAUTHORIZED);
+    }
+
     /**
      * Method responsible for changing status on seat for which ticket is returned
      *
@@ -103,14 +118,6 @@ public class RoomController {
             }
         }
         return false;
-    }
-
-    private String getTokenFromString(String postedToken) {
-
-        if (postedToken.length() > 53) {
-            return postedToken.substring(17, 53);
-        }
-        return null;
     }
 
 
